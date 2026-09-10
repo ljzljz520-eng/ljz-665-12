@@ -117,7 +117,7 @@ def convert_create_table(lines: list[str], start_idx: int) -> tuple[list[str], i
             idx_name = key_m.group(3) or key_m.group(4)
             cols = parse_index_columns(key_m.group(5))
             if unique:
-                index_statements.append(f"CREATE INDEX [{idx_name}] ON [{table}] ({cols});\n")
+                index_statements.append(f"CREATE UNIQUE INDEX [{idx_name}] ON [{table}] ({cols});\n")
             else:
                 index_statements.append(f"CREATE INDEX [{idx_name}] ON [{table}] ({cols});\n")
             i += 1

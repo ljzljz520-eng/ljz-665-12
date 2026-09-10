@@ -1,0 +1,132 @@
+-- =====================================================================
+-- 设备档案模块 增量脚本（SQL Server）
+-- 日期: 2026-09-10
+-- 说明: 全新部署由容器初始化脚本自动创建，无需执行本脚本。
+--       已有 SQL Server 环境升级时手工执行；执行后请给角色授权并重新登录。
+--       所有语句均带存在性判断，可重复执行。
+-- =====================================================================
+SET NOCOUNT ON;
+GO
+
+IF OBJECT_ID(N'[equipment_archive]', N'U') IS NULL
+BEGIN
+CREATE TABLE [equipment_archive] (
+  [id] nvarchar(32) NOT NULL,
+  [device_code] nvarchar(64) NOT NULL,
+  [device_name] nvarchar(100) NOT NULL,
+  [device_type] nvarchar(32) NULL,
+  [sys_org_code] nvarchar(64) NULL,
+  [install_location] nvarchar(200) NULL,
+  [purchase_date] date NULL,
+  [responsible_person] nvarchar(64) NULL,
+  [use_status] nvarchar(10) NULL DEFAULT '1',
+  [remark] nvarchar(500) NULL,
+  [create_by] nvarchar(32) NULL,
+  [create_time] datetime2 NULL,
+  [update_by] nvarchar(32) NULL,
+  [update_time] datetime2 NULL,
+  PRIMARY KEY ([id]) 
+);
+CREATE UNIQUE INDEX [uk_equipment_archive_code] ON [equipment_archive] ([device_code]);
+CREATE INDEX [idx_equipment_archive_org] ON [equipment_archive] ([sys_org_code]);
+CREATE INDEX [idx_equipment_archive_uptime] ON [equipment_archive] ([update_time]);
+
+END
+GO
+-- data for sys_dict
+IF NOT EXISTS (SELECT 1 FROM [sys_dict] WHERE [id] = 'ea000000000000000000000000000001')
+INSERT INTO [sys_dict]  VALUES ('ea000000000000000000000000000001', '设备类型', 'equipment_type', '设备档案-设备类型', 0, 'admin', '2026-09-10 10:00:00', NULL, NULL, 0, 0, NULL);
+GO
+IF NOT EXISTS (SELECT 1 FROM [sys_dict] WHERE [id] = 'ea000000000000000000000000000002')
+INSERT INTO [sys_dict]  VALUES ('ea000000000000000000000000000002', '使用状态', 'equipment_use_status', '设备档案-使用状态（1在用 2闲置 3维修中 4报废）', 0, 'admin', '2026-09-10 10:00:00', NULL, NULL, 0, 0, NULL);
+GO
+
+-- data for sys_dict_item
+IF NOT EXISTS (SELECT 1 FROM [sys_dict_item] WHERE [id] = 'ea100000000000000000000000000001')
+INSERT INTO [sys_dict_item]  VALUES ('ea100000000000000000000000000001', 'ea000000000000000000000000000001', '机械设备', '1', 'blue', NULL, 1, 1, 'admin', '2026-09-10 10:00:00', NULL, NULL);
+GO
+IF NOT EXISTS (SELECT 1 FROM [sys_dict_item] WHERE [id] = 'ea100000000000000000000000000002')
+INSERT INTO [sys_dict_item]  VALUES ('ea100000000000000000000000000002', 'ea000000000000000000000000000001', '电气设备', '2', 'cyan', NULL, 2, 1, 'admin', '2026-09-10 10:00:00', NULL, NULL);
+GO
+IF NOT EXISTS (SELECT 1 FROM [sys_dict_item] WHERE [id] = 'ea100000000000000000000000000003')
+INSERT INTO [sys_dict_item]  VALUES ('ea100000000000000000000000000003', 'ea000000000000000000000000000001', '仪器仪表', '3', 'green', NULL, 3, 1, 'admin', '2026-09-10 10:00:00', NULL, NULL);
+GO
+IF NOT EXISTS (SELECT 1 FROM [sys_dict_item] WHERE [id] = 'ea100000000000000000000000000004')
+INSERT INTO [sys_dict_item]  VALUES ('ea100000000000000000000000000004', 'ea000000000000000000000000000001', '运输设备', '4', 'orange', NULL, 4, 1, 'admin', '2026-09-10 10:00:00', NULL, NULL);
+GO
+IF NOT EXISTS (SELECT 1 FROM [sys_dict_item] WHERE [id] = 'ea100000000000000000000000000005')
+INSERT INTO [sys_dict_item]  VALUES ('ea100000000000000000000000000005', 'ea000000000000000000000000000001', '办公设备', '5', 'purple', NULL, 5, 1, 'admin', '2026-09-10 10:00:00', NULL, NULL);
+GO
+IF NOT EXISTS (SELECT 1 FROM [sys_dict_item] WHERE [id] = 'ea100000000000000000000000000006')
+INSERT INTO [sys_dict_item]  VALUES ('ea100000000000000000000000000006', 'ea000000000000000000000000000001', '其他', '9', 'default', NULL, 9, 1, 'admin', '2026-09-10 10:00:00', NULL, NULL);
+GO
+IF NOT EXISTS (SELECT 1 FROM [sys_dict_item] WHERE [id] = 'ea200000000000000000000000000001')
+INSERT INTO [sys_dict_item]  VALUES ('ea200000000000000000000000000001', 'ea000000000000000000000000000002', '在用', '1', 'green', NULL, 1, 1, 'admin', '2026-09-10 10:00:00', NULL, NULL);
+GO
+IF NOT EXISTS (SELECT 1 FROM [sys_dict_item] WHERE [id] = 'ea200000000000000000000000000002')
+INSERT INTO [sys_dict_item]  VALUES ('ea200000000000000000000000000002', 'ea000000000000000000000000000002', '闲置', '2', 'default', NULL, 2, 1, 'admin', '2026-09-10 10:00:00', NULL, NULL);
+GO
+IF NOT EXISTS (SELECT 1 FROM [sys_dict_item] WHERE [id] = 'ea200000000000000000000000000003')
+INSERT INTO [sys_dict_item]  VALUES ('ea200000000000000000000000000003', 'ea000000000000000000000000000002', '维修中', '3', 'orange', NULL, 3, 1, 'admin', '2026-09-10 10:00:00', NULL, NULL);
+GO
+IF NOT EXISTS (SELECT 1 FROM [sys_dict_item] WHERE [id] = 'ea200000000000000000000000000004')
+INSERT INTO [sys_dict_item]  VALUES ('ea200000000000000000000000000004', 'ea000000000000000000000000000002', '报废', '4', 'red', NULL, 4, 1, 'admin', '2026-09-10 10:00:00', NULL, NULL);
+GO
+
+-- data for sys_permission
+IF NOT EXISTS (SELECT 1 FROM [sys_permission] WHERE [id] = 'ea300000000000000000000000000001')
+INSERT INTO [sys_permission]  VALUES ('ea300000000000000000000000000001', '', '设备管理', '/equipment', 'layouts/default/index', 1, NULL, '/equipment/archive', 0, NULL, '1', 5.00, 1, 'ant-design:hdd-outlined', 0, 0, 0, 0, NULL, 'admin', '2026-09-10 10:00:00', NULL, NULL, 0, 0, '1', 0);
+GO
+IF NOT EXISTS (SELECT 1 FROM [sys_permission] WHERE [id] = 'ea300000000000000000000000000002')
+INSERT INTO [sys_permission]  VALUES ('ea300000000000000000000000000002', 'ea300000000000000000000000000001', '设备档案', '/equipment/archive', 'equipment/archive/index', 1, NULL, NULL, 1, NULL, '1', 1.00, 0, 'ant-design:profile-outlined', 1, 1, 0, 0, NULL, 'admin', '2026-09-10 10:00:00', NULL, NULL, 0, 0, '1', 0);
+GO
+IF NOT EXISTS (SELECT 1 FROM [sys_permission] WHERE [id] = 'ea300000000000000000000000000003')
+INSERT INTO [sys_permission]  VALUES ('ea300000000000000000000000000003', 'ea300000000000000000000000000002', '新增', NULL, NULL, 1, NULL, NULL, 2, 'equipment:archive:add', '1', 1.00, 0, NULL, 1, 0, 0, NULL, NULL, 'admin', '2026-09-10 10:00:00', NULL, NULL, 0, 0, '1', 0);
+GO
+IF NOT EXISTS (SELECT 1 FROM [sys_permission] WHERE [id] = 'ea300000000000000000000000000004')
+INSERT INTO [sys_permission]  VALUES ('ea300000000000000000000000000004', 'ea300000000000000000000000000002', '编辑', NULL, NULL, 1, NULL, NULL, 2, 'equipment:archive:edit', '1', 2.00, 0, NULL, 1, 0, 0, NULL, NULL, 'admin', '2026-09-10 10:00:00', NULL, NULL, 0, 0, '1', 0);
+GO
+IF NOT EXISTS (SELECT 1 FROM [sys_permission] WHERE [id] = 'ea300000000000000000000000000005')
+INSERT INTO [sys_permission]  VALUES ('ea300000000000000000000000000005', 'ea300000000000000000000000000002', '删除', NULL, NULL, 1, NULL, NULL, 2, 'equipment:archive:delete', '1', 3.00, 0, NULL, 1, 0, 0, NULL, NULL, 'admin', '2026-09-10 10:00:00', NULL, NULL, 0, 0, '1', 0);
+GO
+IF NOT EXISTS (SELECT 1 FROM [sys_permission] WHERE [id] = 'ea300000000000000000000000000006')
+INSERT INTO [sys_permission]  VALUES ('ea300000000000000000000000000006', 'ea300000000000000000000000000002', '批量删除', NULL, NULL, 1, NULL, NULL, 2, 'equipment:archive:deleteBatch', '1', 4.00, 0, NULL, 1, 0, 0, NULL, NULL, 'admin', '2026-09-10 10:00:00', NULL, NULL, 0, 0, '1', 0);
+GO
+IF NOT EXISTS (SELECT 1 FROM [sys_permission] WHERE [id] = 'ea300000000000000000000000000007')
+INSERT INTO [sys_permission]  VALUES ('ea300000000000000000000000000007', 'ea300000000000000000000000000002', '导出', NULL, NULL, 1, NULL, NULL, 2, 'equipment:archive:exportXls', '1', 5.00, 0, NULL, 1, 0, 0, NULL, NULL, 'admin', '2026-09-10 10:00:00', NULL, NULL, 0, 0, '1', 0);
+GO
+IF NOT EXISTS (SELECT 1 FROM [sys_permission] WHERE [id] = 'ea300000000000000000000000000008')
+INSERT INTO [sys_permission]  VALUES ('ea300000000000000000000000000008', 'ea300000000000000000000000000002', '导入', NULL, NULL, 1, NULL, NULL, 2, 'equipment:archive:importExcel', '1', 6.00, 0, NULL, 1, 0, 0, NULL, NULL, 'admin', '2026-09-10 10:00:00', NULL, NULL, 0, 0, '1', 0);
+GO
+
+-- data for sys_role_permission
+IF NOT EXISTS (SELECT 1 FROM [sys_role_permission] WHERE [id] = 'ea400000000000000000000000000001')
+INSERT INTO [sys_role_permission]  VALUES ('ea400000000000000000000000000001', 'f6817f48af4fb3af11b9e8bf182f618b', 'ea300000000000000000000000000001', NULL, '2026-09-10 10:00:00', NULL);
+GO
+IF NOT EXISTS (SELECT 1 FROM [sys_role_permission] WHERE [id] = 'ea400000000000000000000000000002')
+INSERT INTO [sys_role_permission]  VALUES ('ea400000000000000000000000000002', 'f6817f48af4fb3af11b9e8bf182f618b', 'ea300000000000000000000000000002', NULL, '2026-09-10 10:00:00', NULL);
+GO
+IF NOT EXISTS (SELECT 1 FROM [sys_role_permission] WHERE [id] = 'ea400000000000000000000000000003')
+INSERT INTO [sys_role_permission]  VALUES ('ea400000000000000000000000000003', 'f6817f48af4fb3af11b9e8bf182f618b', 'ea300000000000000000000000000003', NULL, '2026-09-10 10:00:00', NULL);
+GO
+IF NOT EXISTS (SELECT 1 FROM [sys_role_permission] WHERE [id] = 'ea400000000000000000000000000004')
+INSERT INTO [sys_role_permission]  VALUES ('ea400000000000000000000000000004', 'f6817f48af4fb3af11b9e8bf182f618b', 'ea300000000000000000000000000004', NULL, '2026-09-10 10:00:00', NULL);
+GO
+IF NOT EXISTS (SELECT 1 FROM [sys_role_permission] WHERE [id] = 'ea400000000000000000000000000005')
+INSERT INTO [sys_role_permission]  VALUES ('ea400000000000000000000000000005', 'f6817f48af4fb3af11b9e8bf182f618b', 'ea300000000000000000000000000005', NULL, '2026-09-10 10:00:00', NULL);
+GO
+IF NOT EXISTS (SELECT 1 FROM [sys_role_permission] WHERE [id] = 'ea400000000000000000000000000006')
+INSERT INTO [sys_role_permission]  VALUES ('ea400000000000000000000000000006', 'f6817f48af4fb3af11b9e8bf182f618b', 'ea300000000000000000000000000006', NULL, '2026-09-10 10:00:00', NULL);
+GO
+IF NOT EXISTS (SELECT 1 FROM [sys_role_permission] WHERE [id] = 'ea400000000000000000000000000007')
+INSERT INTO [sys_role_permission]  VALUES ('ea400000000000000000000000000007', 'f6817f48af4fb3af11b9e8bf182f618b', 'ea300000000000000000000000000007', NULL, '2026-09-10 10:00:00', NULL);
+GO
+IF NOT EXISTS (SELECT 1 FROM [sys_role_permission] WHERE [id] = 'ea400000000000000000000000000008')
+INSERT INTO [sys_role_permission]  VALUES ('ea400000000000000000000000000008', 'f6817f48af4fb3af11b9e8bf182f618b', 'ea300000000000000000000000000008', NULL, '2026-09-10 10:00:00', NULL);
+GO
+
+-- data for sys_table_white_list
+IF NOT EXISTS (SELECT 1 FROM [sys_table_white_list] WHERE [id] = 'ea500000000000000000000000000001')
+INSERT INTO [sys_table_white_list]  VALUES ('ea500000000000000000000000000001', 'equipment_archive', '*', '1', 'admin', '2026-09-10 10:00:00', NULL, NULL);
+GO
+

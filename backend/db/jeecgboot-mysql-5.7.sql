@@ -10347,3 +10347,77 @@ END
 delimiter ;
 
 SET FOREIGN_KEY_CHECKS = 1;
+
+-- ----------------------------
+-- Table structure for equipment_archive（设备档案表）
+-- ----------------------------
+DROP TABLE IF EXISTS `equipment_archive`;
+CREATE TABLE `equipment_archive`  (
+  `id` varchar(32) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '主键id',
+  `device_code` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '设备编号（唯一）',
+  `device_name` varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '设备名称',
+  `device_type` varchar(32) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '设备类型',
+  `sys_org_code` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '所属部门编码',
+  `install_location` varchar(200) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '安装位置',
+  `purchase_date` date NULL DEFAULT NULL COMMENT '购置日期',
+  `responsible_person` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '责任人（用户名）',
+  `use_status` varchar(10) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '1' COMMENT '使用状态（1在用 2闲置 3维修中 4报废）',
+  `remark` varchar(500) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '备注',
+  `create_by` varchar(32) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '创建人',
+  `create_time` datetime NULL DEFAULT NULL COMMENT '创建时间',
+  `update_by` varchar(32) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '更新人',
+  `update_time` datetime NULL DEFAULT NULL COMMENT '更新时间',
+  PRIMARY KEY (`id`) USING BTREE,
+  UNIQUE INDEX `uk_equipment_archive_code`(`device_code`) USING BTREE,
+  INDEX `idx_equipment_archive_org`(`sys_org_code`) USING BTREE,
+  INDEX `idx_equipment_archive_uptime`(`update_time`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '设备档案表' ROW_FORMAT = DYNAMIC;
+
+-- ----------------------------
+-- Records of sys_dict（设备档案相关字典）
+-- ----------------------------
+INSERT INTO `sys_dict` VALUES ('ea000000000000000000000000000001', '设备类型', 'equipment_type', '设备档案-设备类型', 0, 'admin', '2026-09-10 10:00:00', NULL, NULL, 0, 0, NULL);
+INSERT INTO `sys_dict` VALUES ('ea000000000000000000000000000002', '使用状态', 'equipment_use_status', '设备档案-使用状态（1在用 2闲置 3维修中 4报废）', 0, 'admin', '2026-09-10 10:00:00', NULL, NULL, 0, 0, NULL);
+
+-- ----------------------------
+-- Records of sys_dict_item（设备档案相关字典项）
+-- ----------------------------
+INSERT INTO `sys_dict_item` VALUES ('ea100000000000000000000000000001', 'ea000000000000000000000000000001', '机械设备', '1', 'blue', NULL, 1, 1, 'admin', '2026-09-10 10:00:00', NULL, NULL);
+INSERT INTO `sys_dict_item` VALUES ('ea100000000000000000000000000002', 'ea000000000000000000000000000001', '电气设备', '2', 'cyan', NULL, 2, 1, 'admin', '2026-09-10 10:00:00', NULL, NULL);
+INSERT INTO `sys_dict_item` VALUES ('ea100000000000000000000000000003', 'ea000000000000000000000000000001', '仪器仪表', '3', 'green', NULL, 3, 1, 'admin', '2026-09-10 10:00:00', NULL, NULL);
+INSERT INTO `sys_dict_item` VALUES ('ea100000000000000000000000000004', 'ea000000000000000000000000000001', '运输设备', '4', 'orange', NULL, 4, 1, 'admin', '2026-09-10 10:00:00', NULL, NULL);
+INSERT INTO `sys_dict_item` VALUES ('ea100000000000000000000000000005', 'ea000000000000000000000000000001', '办公设备', '5', 'purple', NULL, 5, 1, 'admin', '2026-09-10 10:00:00', NULL, NULL);
+INSERT INTO `sys_dict_item` VALUES ('ea100000000000000000000000000006', 'ea000000000000000000000000000001', '其他', '9', 'default', NULL, 9, 1, 'admin', '2026-09-10 10:00:00', NULL, NULL);
+INSERT INTO `sys_dict_item` VALUES ('ea200000000000000000000000000001', 'ea000000000000000000000000000002', '在用', '1', 'green', NULL, 1, 1, 'admin', '2026-09-10 10:00:00', NULL, NULL);
+INSERT INTO `sys_dict_item` VALUES ('ea200000000000000000000000000002', 'ea000000000000000000000000000002', '闲置', '2', 'default', NULL, 2, 1, 'admin', '2026-09-10 10:00:00', NULL, NULL);
+INSERT INTO `sys_dict_item` VALUES ('ea200000000000000000000000000003', 'ea000000000000000000000000000002', '维修中', '3', 'orange', NULL, 3, 1, 'admin', '2026-09-10 10:00:00', NULL, NULL);
+INSERT INTO `sys_dict_item` VALUES ('ea200000000000000000000000000004', 'ea000000000000000000000000000002', '报废', '4', 'red', NULL, 4, 1, 'admin', '2026-09-10 10:00:00', NULL, NULL);
+
+-- ----------------------------
+-- Records of sys_permission（设备档案菜单与按钮权限）
+-- ----------------------------
+INSERT INTO `sys_permission` VALUES ('ea300000000000000000000000000001', '', '设备管理', '/equipment', 'layouts/default/index', 1, NULL, '/equipment/archive', 0, NULL, '1', 5.00, 1, 'ant-design:hdd-outlined', 0, 0, 0, 0, NULL, 'admin', '2026-09-10 10:00:00', NULL, NULL, 0, 0, '1', 0);
+INSERT INTO `sys_permission` VALUES ('ea300000000000000000000000000002', 'ea300000000000000000000000000001', '设备档案', '/equipment/archive', 'equipment/archive/index', 1, NULL, NULL, 1, NULL, '1', 1.00, 0, 'ant-design:profile-outlined', 1, 1, 0, 0, NULL, 'admin', '2026-09-10 10:00:00', NULL, NULL, 0, 0, '1', 0);
+INSERT INTO `sys_permission` VALUES ('ea300000000000000000000000000003', 'ea300000000000000000000000000002', '新增', NULL, NULL, 1, NULL, NULL, 2, 'equipment:archive:add', '1', 1.00, 0, NULL, 1, 0, 0, NULL, NULL, 'admin', '2026-09-10 10:00:00', NULL, NULL, 0, 0, '1', 0);
+INSERT INTO `sys_permission` VALUES ('ea300000000000000000000000000004', 'ea300000000000000000000000000002', '编辑', NULL, NULL, 1, NULL, NULL, 2, 'equipment:archive:edit', '1', 2.00, 0, NULL, 1, 0, 0, NULL, NULL, 'admin', '2026-09-10 10:00:00', NULL, NULL, 0, 0, '1', 0);
+INSERT INTO `sys_permission` VALUES ('ea300000000000000000000000000005', 'ea300000000000000000000000000002', '删除', NULL, NULL, 1, NULL, NULL, 2, 'equipment:archive:delete', '1', 3.00, 0, NULL, 1, 0, 0, NULL, NULL, 'admin', '2026-09-10 10:00:00', NULL, NULL, 0, 0, '1', 0);
+INSERT INTO `sys_permission` VALUES ('ea300000000000000000000000000006', 'ea300000000000000000000000000002', '批量删除', NULL, NULL, 1, NULL, NULL, 2, 'equipment:archive:deleteBatch', '1', 4.00, 0, NULL, 1, 0, 0, NULL, NULL, 'admin', '2026-09-10 10:00:00', NULL, NULL, 0, 0, '1', 0);
+INSERT INTO `sys_permission` VALUES ('ea300000000000000000000000000007', 'ea300000000000000000000000000002', '导出', NULL, NULL, 1, NULL, NULL, 2, 'equipment:archive:exportXls', '1', 5.00, 0, NULL, 1, 0, 0, NULL, NULL, 'admin', '2026-09-10 10:00:00', NULL, NULL, 0, 0, '1', 0);
+INSERT INTO `sys_permission` VALUES ('ea300000000000000000000000000008', 'ea300000000000000000000000000002', '导入', NULL, NULL, 1, NULL, NULL, 2, 'equipment:archive:importExcel', '1', 6.00, 0, NULL, 1, 0, 0, NULL, NULL, 'admin', '2026-09-10 10:00:00', NULL, NULL, 0, 0, '1', 0);
+
+-- ----------------------------
+-- Records of sys_role_permission（给admin管理员角色授权）
+-- ----------------------------
+INSERT INTO `sys_role_permission` VALUES ('ea400000000000000000000000000001', 'f6817f48af4fb3af11b9e8bf182f618b', 'ea300000000000000000000000000001', NULL, '2026-09-10 10:00:00', NULL);
+INSERT INTO `sys_role_permission` VALUES ('ea400000000000000000000000000002', 'f6817f48af4fb3af11b9e8bf182f618b', 'ea300000000000000000000000000002', NULL, '2026-09-10 10:00:00', NULL);
+INSERT INTO `sys_role_permission` VALUES ('ea400000000000000000000000000003', 'f6817f48af4fb3af11b9e8bf182f618b', 'ea300000000000000000000000000003', NULL, '2026-09-10 10:00:00', NULL);
+INSERT INTO `sys_role_permission` VALUES ('ea400000000000000000000000000004', 'f6817f48af4fb3af11b9e8bf182f618b', 'ea300000000000000000000000000004', NULL, '2026-09-10 10:00:00', NULL);
+INSERT INTO `sys_role_permission` VALUES ('ea400000000000000000000000000005', 'f6817f48af4fb3af11b9e8bf182f618b', 'ea300000000000000000000000000005', NULL, '2026-09-10 10:00:00', NULL);
+INSERT INTO `sys_role_permission` VALUES ('ea400000000000000000000000000006', 'f6817f48af4fb3af11b9e8bf182f618b', 'ea300000000000000000000000000006', NULL, '2026-09-10 10:00:00', NULL);
+INSERT INTO `sys_role_permission` VALUES ('ea400000000000000000000000000007', 'f6817f48af4fb3af11b9e8bf182f618b', 'ea300000000000000000000000000007', NULL, '2026-09-10 10:00:00', NULL);
+INSERT INTO `sys_role_permission` VALUES ('ea400000000000000000000000000008', 'f6817f48af4fb3af11b9e8bf182f618b', 'ea300000000000000000000000000008', NULL, '2026-09-10 10:00:00', NULL);
+
+-- ----------------------------
+-- Records of sys_table_white_list（设备档案重复校验白名单）
+-- ----------------------------
+INSERT INTO `sys_table_white_list` VALUES ('ea500000000000000000000000000001', 'equipment_archive', '*', '1', 'admin', '2026-09-10 10:00:00', NULL, NULL);
